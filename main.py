@@ -5,7 +5,7 @@ import uvicorn
 
 app = FastAPI()
 
-API_KEY = "your-secret-token"
+API_KEY = "Nafadh@2025"
 
 class GenerateRequest(BaseModel):
     prompt: str
