@@ -14,7 +14,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# المفتاح يُقرأ من متغير بيئة لحماية أقوى
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 class PromptRequest(BaseModel):
@@ -24,16 +23,13 @@ class PromptRequest(BaseModel):
 @app.post("/generate")
 async def generate_text(req: PromptRequest):
     if req.token != "Nafadh@2025":
-        return {"error": "رمز الحماية غير صحيح ❌"}
-    
+        return {"error": "رمز الحماية غير صحيح"}
+
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",
-            messages=[
-                {"role": "user", "content": req.prompt}
-            ]
+            messages=[{"role": "user", "content": req.prompt}]
         )
-        result = response["choices"][0]["message"]["content"]
-        return {"output": result}
+        return {"output": response["choices"][0]["message"]["content"]}
     except Exception as e:
         return {"error": str(e)}
