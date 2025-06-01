@@ -1,11 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional
 import openai
 import os
 
+# تهيئة التطبيق
 app = FastAPI()
 
+# السماح بالوصول من أي جهة
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,22 +17,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# الحصول على المفتاح من المتغير البيئي
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+# نموذج الطلب
 class PromptRequest(BaseModel):
     prompt: str
-    token: str
+    token: Optional[str] = None
 
 @app.post("/generate")
 async def generate_text(req: PromptRequest):
-    if req.token != "Nafadh@2025":
-        return {"error": "رمز الحماية غير صحيح"}
-
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",
-            messages=[{"role": "user", "content": req.prompt}]
+            messages=[{"role": "user", "content": req.prompt}],
         )
-        return {"output": response["choices"][0]["message"]["content"]}
+        output = response.choices[0].message.content
+        return {"output": output}
     except Exception as e:
         return {"error": str(e)}
