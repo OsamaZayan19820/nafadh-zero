@@ -1,23 +1,35 @@
-
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import uvicorn
+from typing import Optional
 
 app = FastAPI()
 
+# ✅ إضافة دعم CORS للسماح للواجهة بالتواصل مع الخادم
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # يمكنك استبدال * بـ "https://osamazayan19820.github.io" للخصوصية
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# 🔐 رمز التحقق
 API_KEY = "Nafadh@2025"
 
-class GenerateRequest(BaseModel):
+# 📦 نموذج البيانات المستقبلة
+class PromptRequest(BaseModel):
     prompt: str
-    token: str
+    token: Optional[str] = None
 
+# 🚀 نقطة النهاية الأساسية
 @app.post("/generate")
-async def generate_text(request: GenerateRequest):
-    if request.token != API_KEY:
-        raise HTTPException(status_code=403, detail="Unauthorized")
-
-    response_text = f"🧠 تم توليد استجابة لنَفَاذ بناءً على: '{request.prompt}'"
-    return {"output": response_text}
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=10000, reload=True)
+async def generate_text(req: PromptRequest):
+    if req.token != API_KEY:
+        return {"error": "رمز الحماية غير صحيح"}
+    
+    # 🧠 هنا المنطق التوليدي (مؤقتًا مجرد محاكاة)
+    output = f"🔮 توليد نَفَاذ: {req.prompt[::-1]}"
+    
+    return {"output": output}
+    ✅ إضافة دعم CORS لتفعيل واجهة نَفَاذ من GitHub Pages
